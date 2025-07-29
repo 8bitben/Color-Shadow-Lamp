@@ -50,6 +50,7 @@ public:
     );
     void begin();
     void setPWMDirectly(int red, int green, int blue);
+    void setPWMForced(int red, int green, int blue);
     void getPWMValues(int& red, int& green, int& blue) {
         red = currentRed;
         green = currentGreen;
@@ -59,6 +60,7 @@ public:
     void unlock();
     void resetToSafeMode();
     void checkAndUpdatePowerLimit();
+    void setPowerLimit(float limit);
 
     bool shouldUpdate(int current, int new_value);
     void adjustThreshold(int current, int new_value);

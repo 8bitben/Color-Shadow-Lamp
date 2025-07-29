@@ -7,6 +7,7 @@
 enum class OperationMode {
     RGB,
     LTT,
+    POWERCON,
     WIFI,
     OFF,
 };
@@ -28,6 +29,7 @@ public:
     void begin() {
         currentMode = OperationMode::RGB;
         pinMode(BUTTON_PIN, INPUT);
+        Serial.println("Initial mode: RGB");
     }
 
     OperationMode getCurrentMode() const {
@@ -45,15 +47,23 @@ public:
                 switch (currentMode) {
                     case OperationMode::OFF:
                         currentMode = OperationMode::RGB;
+                        Serial.println("Mode changed to: RGB");
                         break;
                     case OperationMode::RGB:
                         currentMode = OperationMode::LTT;
+                        Serial.println("Mode changed to: LTT");
                         break;
                     case OperationMode::LTT:
+                        currentMode = OperationMode::POWERCON;
+                        Serial.println("Mode changed to: POWERCON");
+                        break;
+                    case OperationMode::POWERCON:
                         currentMode = OperationMode::WIFI;
+                        Serial.println("Mode changed to: WIFI");
                         break;
                     case OperationMode::WIFI:
                         currentMode = OperationMode::OFF;
+                        Serial.println("Mode changed to: OFF");
                         break;
                 }
             }

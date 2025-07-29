@@ -2,7 +2,7 @@
 #include "LEDController.h"
 #include "LTTController.h"
 #include "WiFiManager.h"
-#include "State.h"
+#include "state.h"
 
 const int RED_PIN = 5;
 const int GREEN_PIN = 6;
@@ -58,6 +58,7 @@ int calculateMovingAverage(int *values, int size)
 void setup()
 {
   Serial.begin(115200);
+  Serial.println("Color Shadow Lamp starting up...");
   ledController.begin();
   stateHandler.begin();
 
@@ -134,6 +135,21 @@ void loop()
       break;
     case OperationMode::LTT:
       lttController.updateLTT(pot1, pot2, pot3);
+      break;
+    case OperationMode::POWERCON:
+      {
+        // Middle pot (pot2) controls power limit from 0.05 to 1.0 (5% to 100%)
+        float powerLimit = map(pot2, 0, 2047, 50, 1000) / 1000.0f;
+        ledController.setPowerLimit(powerLimit);
+        // Set LEDs to white at current power limit - force update every time
+        ledController.setPWMForced(2047, 2047, 2047);
+        
+        // Debug output
+        Serial.print("POWERCON - pot2: ");
+        Serial.print(pot2);
+        Serial.print(", powerLimit: ");
+        Serial.println(powerLimit);
+      }
       break;
     case OperationMode::OFF:
     case OperationMode::WIFI:

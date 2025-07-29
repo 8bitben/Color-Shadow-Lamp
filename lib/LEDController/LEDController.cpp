@@ -64,6 +64,31 @@ void LEDController::resetToSafeMode() {
     currentPowerLimit = LOCKED_POWER_LIMIT;
 }
 
+void LEDController::setPowerLimit(float limit) {
+    currentPowerLimit = constrain(limit, 0.0f, 1.0f);
+}
+
+void LEDController::setPWMForced(int red, int green, int blue) {
+    // Constrain values first
+    red = constrain(red, 0, 2047);
+    green = constrain(green, 0, 2047);
+    blue = constrain(blue, 0, 2047);
+
+    // Apply RGB trim values
+    red = static_cast<int>(red * RED_TRIM);
+    green = static_cast<int>(green * GREEN_TRIM);
+    blue = static_cast<int>(blue * BLUE_TRIM);
+
+    // Force update without shouldUpdate check
+    currentRed = red;
+    currentGreen = green;
+    currentBlue = blue;
+    
+    writePWM(redChannel, red);
+    writePWM(greenChannel, green);
+    writePWM(blueChannel, blue);
+}
+
 void LEDController::applyPowerLimit(int& red, int& green, int& blue) {
     float totalPower = (red + green + blue) / (3.0f * 2047.0f);
     if (totalPower > currentPowerLimit) {
