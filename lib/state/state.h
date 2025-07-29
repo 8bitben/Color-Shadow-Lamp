@@ -8,8 +8,8 @@ enum class OperationMode {
     RGB,
     LTT,
     POWERCON,
-    WIFI,
     MQTT,
+    WIFI,
     OFF,
 };
 
@@ -59,14 +59,14 @@ public:
                         Serial.println("Mode changed to: POWERCON");
                         break;
                     case OperationMode::POWERCON:
-                        currentMode = OperationMode::WIFI;
-                        Serial.println("Mode changed to: WIFI");
-                        break;
-                    case OperationMode::WIFI:
                         currentMode = OperationMode::MQTT;
                         Serial.println("Mode changed to: MQTT");
                         break;
                     case OperationMode::MQTT:
+                        currentMode = OperationMode::WIFI;
+                        Serial.println("Mode changed to: WIFI");
+                        break;
+                    case OperationMode::WIFI:
                         currentMode = OperationMode::OFF;
                         Serial.println("Mode changed to: OFF");
                         break;
