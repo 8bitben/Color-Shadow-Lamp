@@ -2,6 +2,7 @@
 #include "LEDController.h"
 #include "LTTController.h"
 #include "WiFiManager.h"
+#include "MQTTController.h"
 #include "state.h"
 
 const int RED_PIN = 5;
@@ -33,6 +34,7 @@ LEDController ledController(
 
 LTTController lttController(ledController);
 WiFiManager wifiManager(ledController);
+MQTTController mqttController(ledController);
 StateHandler stateHandler(ledController);
 
 int readAveragedADC(int pin, int samples = 4)
@@ -83,6 +85,10 @@ void loop()
     {
       wifiManager.update();
     }
+    else if (stateHandler.getCurrentMode() == OperationMode::MQTT)
+    {
+      mqttController.update();
+    }
 
     int pot1 = readAveragedADC(POT_RED_PIN);
     int pot2 = readAveragedADC(POT_GREEN_PIN);
@@ -111,7 +117,9 @@ void loop()
     //Serial.println(pot3);
 
     static bool wasInWiFiMode = false;
+    static bool wasInMQTTMode = false;
     bool isInWiFiMode = stateHandler.getCurrentMode() == OperationMode::WIFI;
+    bool isInMQTTMode = stateHandler.getCurrentMode() == OperationMode::MQTT;
 
     if (isInWiFiMode && !wasInWiFiMode)
     {
@@ -124,7 +132,21 @@ void loop()
       ledController.setPWMDirectly(0, 0, 0);
       ledController.checkAndUpdatePowerLimit();
     }
+    
+    if (isInMQTTMode && !wasInMQTTMode)
+    {
+      mqttController.begin();
+      ledController.checkAndUpdatePowerLimit();
+    }
+    else if (!isInMQTTMode && wasInMQTTMode)
+    {
+      mqttController.stop();
+      ledController.setPWMDirectly(0, 0, 0);
+      ledController.checkAndUpdatePowerLimit();
+    }
+    
     wasInWiFiMode = isInWiFiMode;
+    wasInMQTTMode = isInMQTTMode;
 
     switch (stateHandler.getCurrentMode())
     {
@@ -153,7 +175,8 @@ void loop()
       break;
     case OperationMode::OFF:
     case OperationMode::WIFI:
-      // LED control happens via WiFi in WIFI mode
+    case OperationMode::MQTT:
+      // LED control happens via WiFi in WIFI mode or MQTT in MQTT mode
       break;
     }
   }
