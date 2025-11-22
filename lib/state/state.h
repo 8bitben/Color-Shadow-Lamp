@@ -42,11 +42,11 @@ public:
         Serial.print("Mode set to: ");
         switch(mode) {
             case OperationMode::RGB: Serial.println("RGB"); break;
-            case OperationMode::LTT: Serial.println("LTT"); break;
-            case OperationMode::POWERCON: Serial.println("POWERCON"); break;
+//            case OperationMode::LTT: Serial.println("LTT"); break;
+//            case OperationMode::POWERCON: Serial.println("POWERCON"); break;
             case OperationMode::MQTT: Serial.println("MQTT"); break;
-            case OperationMode::WIFI: Serial.println("WIFI"); break;
-            case OperationMode::OFF: Serial.println("OFF"); break;
+//            case OperationMode::WIFI: Serial.println("WIFI"); break;
+//            case OperationMode::OFF: Serial.println("OFF"); break;
         }
     }
 
