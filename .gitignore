@@ -6,3 +6,5 @@
 
 # Sensitive configuration file
 include/secrets.h
+
+.DS_Store
