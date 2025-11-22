@@ -34,9 +34,9 @@ First, create your private configuration file:
 
 After updating the configuration, build and upload the firmware to your device.
 
-### 3. Switch to MQTT Mode
+### 3. Power On Device
 
-Use the button on your device to cycle through modes until you reach "MQTT" mode. The device will:
+The lamp will power on in "MQTT" mode. The device will:
 
 1. Connect to your WiFi network
 2. Connect to the MQTT broker
@@ -107,11 +107,8 @@ You can also control the device manually via MQTT by publishing to the command t
 ## Operation Modes
 
 The device has multiple operation modes accessible via the button:
+- **MQTT**: Home Assistant integration
 - **RGB**: Manual control via potentiometers
-- **LTT**: Linus Tech Tips colors
-- **POWERCON**: Power consumption testing
-- **WIFI**: Web interface control
-- **MQTT**: Home Assistant integration (new)
-- **OFF**: Device off
+
 
 Press the button to cycle through modes. The current mode is displayed in the serial output.
