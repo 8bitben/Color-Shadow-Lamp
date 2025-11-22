@@ -91,11 +91,12 @@ void loop()
     lastUpdate = currentMillis;
     stateHandler.update();
 
-    if (stateHandler.getCurrentMode() == OperationMode::WIFI)
-    {
-      wifiManager.update();
-    }
-    else if (stateHandler.getCurrentMode() == OperationMode::MQTT)
+    // WiFi mode disabled
+    // if (stateHandler.getCurrentMode() == OperationMode::WIFI)
+    // {
+    //   wifiManager.update();
+    // }
+    if (stateHandler.getCurrentMode() == OperationMode::MQTT)
     {
       mqttController.update();
     }
@@ -126,25 +127,26 @@ void loop()
     //Serial.print(", pot3: ");
     //Serial.println(pot3);
 
-    static bool wasInWiFiMode = false;
+    // static bool wasInWiFiMode = false; // WiFi mode disabled
     static bool wasInMQTTMode = false;
     static bool wasInRGBMode = false;
     static bool mqttFailureHandled = false;
-    bool isInWiFiMode = stateHandler.getCurrentMode() == OperationMode::WIFI;
+    // bool isInWiFiMode = stateHandler.getCurrentMode() == OperationMode::WIFI; // WiFi mode disabled
     bool isInMQTTMode = stateHandler.getCurrentMode() == OperationMode::MQTT;
     bool isInRGBMode = stateHandler.getCurrentMode() == OperationMode::RGB;
 
-    if (isInWiFiMode && !wasInWiFiMode)
-    {
-      wifiManager.begin();
-      ledController.checkAndUpdatePowerLimit();
-    }
-    else if (!isInWiFiMode && wasInWiFiMode)
-    {
-      wifiManager.stop();
-      ledController.setPWMDirectly(0, 0, 0);
-      ledController.checkAndUpdatePowerLimit();
-    }
+    // WiFi mode disabled
+    // if (isInWiFiMode && !wasInWiFiMode)
+    // {
+    //   wifiManager.begin();
+    //   ledController.checkAndUpdatePowerLimit();
+    // }
+    // else if (!isInWiFiMode && wasInWiFiMode)
+    // {
+    //   wifiManager.stop();
+    //   ledController.setPWMDirectly(0, 0, 0);
+    //   ledController.checkAndUpdatePowerLimit();
+    // }
 
     if (isInMQTTMode && !wasInMQTTMode)
     {
@@ -174,7 +176,7 @@ void loop()
       isInMQTTMode = false;
     }
 
-    wasInWiFiMode = isInWiFiMode;
+    // wasInWiFiMode = isInWiFiMode; // WiFi mode disabled
     wasInMQTTMode = isInMQTTMode;
     wasInRGBMode = isInRGBMode;
 
