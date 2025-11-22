@@ -6,7 +6,7 @@
 
 static constexpr float RED_TRIM = 0.95f;   // Adjust these between 0.0-1.0
 static constexpr float GREEN_TRIM = 1.0f;  // to trim individual colors
-static constexpr float BLUE_TRIM = 0.40f; 
+static constexpr float BLUE_TRIM = 0.80f; 
 
 class LEDController {
 private:
