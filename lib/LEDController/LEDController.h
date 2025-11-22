@@ -24,8 +24,12 @@ private:
     //int updateThreshold = 30;
     //bool shouldUpdate(int current, int new_value);
 
-    static constexpr float LOCKED_POWER_LIMIT = 0.3f;   // 30% power
+//    Set Limits by Mode instead of Lock/Unlock
+
+    static constexpr float LOCKED_POWER_LIMIT = 0.9f;   // 30% power
     static constexpr float UNLOCKED_POWER_LIMIT = 0.6f; // 60% power
+    static constexpr float RGB_MODE_POWER_LIMIT = 0.3f; // 30% power for RGB mode
+    static constexpr float MQTT_MODE_POWER_LIMIT = 1.0f; // 100% power for MQTT mode
     float currentPowerLimit;
     Preferences preferences;
     
@@ -61,6 +65,8 @@ public:
     void resetToSafeMode();
     void checkAndUpdatePowerLimit();
     void setPowerLimit(float limit);
+    void setRGBModePowerLimit();
+    void setMQTTModePowerLimit();
 
     bool shouldUpdate(int current, int new_value);
     void adjustThreshold(int current, int new_value);

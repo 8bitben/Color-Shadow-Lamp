@@ -128,9 +128,11 @@ void loop()
 
     static bool wasInWiFiMode = false;
     static bool wasInMQTTMode = false;
+    static bool wasInRGBMode = false;
     static bool mqttFailureHandled = false;
     bool isInWiFiMode = stateHandler.getCurrentMode() == OperationMode::WIFI;
     bool isInMQTTMode = stateHandler.getCurrentMode() == OperationMode::MQTT;
+    bool isInRGBMode = stateHandler.getCurrentMode() == OperationMode::RGB;
 
     if (isInWiFiMode && !wasInWiFiMode)
     {
@@ -146,15 +148,19 @@ void loop()
 
     if (isInMQTTMode && !wasInMQTTMode)
     {
+      ledController.setMQTTModePowerLimit();
       mqttController.begin();
-      ledController.checkAndUpdatePowerLimit();
       mqttFailureHandled = false;
     }
     else if (!isInMQTTMode && wasInMQTTMode)
     {
       mqttController.stop();
       ledController.setPWMDirectly(0, 0, 0);
-      ledController.checkAndUpdatePowerLimit();
+    }
+
+    if (isInRGBMode && !wasInRGBMode)
+    {
+      ledController.setRGBModePowerLimit();
     }
 
     // Check for MQTT connection failure and fallback to RGB mode
@@ -170,6 +176,7 @@ void loop()
 
     wasInWiFiMode = isInWiFiMode;
     wasInMQTTMode = isInMQTTMode;
+    wasInRGBMode = isInRGBMode;
 
     switch (stateHandler.getCurrentMode())
     {
@@ -178,29 +185,24 @@ void loop()
       // since the LED pins are now swapped in begin(), we need to swap these too
       ledController.setPWMDirectly(pot3, pot2, pot1); // Swap values to match physical layout
       break;
-    case OperationMode::LTT:
-      lttController.updateLTT(pot1, pot2, pot3);
-      break;
-    case OperationMode::POWERCON:
-      {
-        // Middle pot (pot2) controls power limit from 0.05 to 1.0 (5% to 100%)
-        float powerLimit = map(pot2, 0, 2047, 50, 1000) / 1000.0f;
-        ledController.setPowerLimit(powerLimit);
-        // Set LEDs to white at current power limit - force update every time
-        ledController.setPWMForced(2047, 2047, 2047);
-        
-        // Debug output
-        Serial.print("POWERCON - pot2: ");
-        Serial.print(pot2);
-        Serial.print(", powerLimit: ");
-        Serial.println(powerLimit);
-      }
-      break;
-    case OperationMode::OFF:
-    case OperationMode::WIFI:
     case OperationMode::MQTT:
-      // LED control happens via WiFi in WIFI mode or MQTT in MQTT mode
+      // LED control happens via MQTT
       break;
+
+    // Temporarily disabled modes:
+    // case OperationMode::LTT:
+    //   lttController.updateLTT(pot1, pot2, pot3);
+    //   break;
+    // case OperationMode::POWERCON:
+    //   {
+    //     float powerLimit = map(pot2, 0, 2047, 50, 1000) / 1000.0f;
+    //     ledController.setPowerLimit(powerLimit);
+    //     ledController.setPWMForced(2047, 2047, 2047);
+    //   }
+    //   break;
+    // case OperationMode::OFF:
+    // case OperationMode::WIFI:
+    //   break;
     }
   }
   delay(2);

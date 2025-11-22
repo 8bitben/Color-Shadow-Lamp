@@ -6,11 +6,12 @@
 
 enum class OperationMode {
     RGB,
-    LTT,
-    POWERCON,
     MQTT,
-    WIFI,
-    OFF,
+    // Temporarily disabled modes:
+    // LTT,
+    // POWERCON,
+    // WIFI,
+    // OFF,
 };
 
 class StateHandler {
@@ -52,36 +53,21 @@ public:
 
     void update() {
         bool buttonIsPressed = (digitalRead(BUTTON_PIN) == 0);
-        
+
         if (buttonIsPressed && !buttonWasPressed) {
             unsigned long now = millis();
             if (now - lastButtonPress >= DEBOUNCE_TIME) {
                 lastButtonPress = now;
-                
+
+                // Toggle between RGB and MQTT only
                 switch (currentMode) {
-                    case OperationMode::OFF:
-                        currentMode = OperationMode::RGB;
-                        Serial.println("Mode changed to: RGB");
-                        break;
                     case OperationMode::RGB:
-                        currentMode = OperationMode::LTT;
-                        Serial.println("Mode changed to: LTT");
-                        break;
-                    case OperationMode::LTT:
-                        currentMode = OperationMode::POWERCON;
-                        Serial.println("Mode changed to: POWERCON");
-                        break;
-                    case OperationMode::POWERCON:
                         currentMode = OperationMode::MQTT;
                         Serial.println("Mode changed to: MQTT");
                         break;
                     case OperationMode::MQTT:
-                        currentMode = OperationMode::WIFI;
-                        Serial.println("Mode changed to: WIFI");
-                        break;
-                    case OperationMode::WIFI:
-                        currentMode = OperationMode::OFF;
-                        Serial.println("Mode changed to: OFF");
+                        currentMode = OperationMode::RGB;
+                        Serial.println("Mode changed to: RGB");
                         break;
                 }
             }

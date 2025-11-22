@@ -68,6 +68,16 @@ void LEDController::setPowerLimit(float limit) {
     currentPowerLimit = constrain(limit, 0.0f, 1.0f);
 }
 
+void LEDController::setRGBModePowerLimit() {
+    currentPowerLimit = RGB_MODE_POWER_LIMIT;
+    Serial.printf("Power limit set to RGB mode: %f (30%%)\n", currentPowerLimit);
+}
+
+void LEDController::setMQTTModePowerLimit() {
+    currentPowerLimit = MQTT_MODE_POWER_LIMIT;
+    Serial.printf("Power limit set to MQTT mode: %f (100%%)\n", currentPowerLimit);
+}
+
 void LEDController::setPWMForced(int red, int green, int blue) {
     // Constrain values first
     red = constrain(red, 0, 2047);
