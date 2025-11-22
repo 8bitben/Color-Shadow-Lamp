@@ -57,6 +57,16 @@ int calculateMovingAverage(int *values, int size)
   return sum / size;
 }
 
+void blinkRedLight() {
+  // Blink red light three times
+  for (int i = 0; i < 3; i++) {
+    ledController.setPWMDirectly(2047, 0, 0); // Red on
+    delay(300);
+    ledController.setPWMDirectly(0, 0, 0); // Off
+    delay(300);
+  }
+}
+
 void setup()
 {
   Serial.begin(115200);
@@ -118,6 +128,7 @@ void loop()
 
     static bool wasInWiFiMode = false;
     static bool wasInMQTTMode = false;
+    static bool mqttFailureHandled = false;
     bool isInWiFiMode = stateHandler.getCurrentMode() == OperationMode::WIFI;
     bool isInMQTTMode = stateHandler.getCurrentMode() == OperationMode::MQTT;
 
@@ -132,11 +143,12 @@ void loop()
       ledController.setPWMDirectly(0, 0, 0);
       ledController.checkAndUpdatePowerLimit();
     }
-    
+
     if (isInMQTTMode && !wasInMQTTMode)
     {
       mqttController.begin();
       ledController.checkAndUpdatePowerLimit();
+      mqttFailureHandled = false;
     }
     else if (!isInMQTTMode && wasInMQTTMode)
     {
@@ -144,7 +156,18 @@ void loop()
       ledController.setPWMDirectly(0, 0, 0);
       ledController.checkAndUpdatePowerLimit();
     }
-    
+
+    // Check for MQTT connection failure and fallback to RGB mode
+    if (isInMQTTMode && !mqttFailureHandled && mqttController.hasInitialConnectionFailed())
+    {
+      Serial.println("MQTT connection failed! Blinking red light and falling back to RGB mode...");
+      blinkRedLight();
+      stateHandler.setMode(OperationMode::RGB);
+      mqttController.stop();
+      mqttFailureHandled = true;
+      isInMQTTMode = false;
+    }
+
     wasInWiFiMode = isInWiFiMode;
     wasInMQTTMode = isInMQTTMode;
 

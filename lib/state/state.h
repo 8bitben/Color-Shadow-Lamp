@@ -25,16 +25,29 @@ private:
 
 public:
     StateHandler(LEDController &controller)
-        : currentMode(OperationMode::RGB), lastButtonPress(0), buttonWasPressed(false), ledController(controller) {}
+        : currentMode(OperationMode::MQTT), lastButtonPress(0), buttonWasPressed(false), ledController(controller) {}
 
     void begin() {
-        currentMode = OperationMode::RGB;
+        currentMode = OperationMode::MQTT;
         pinMode(BUTTON_PIN, INPUT);
-        Serial.println("Initial mode: RGB");
+        Serial.println("Initial mode: MQTT");
     }
 
     OperationMode getCurrentMode() const {
         return currentMode;
+    }
+
+    void setMode(OperationMode mode) {
+        currentMode = mode;
+        Serial.print("Mode set to: ");
+        switch(mode) {
+            case OperationMode::RGB: Serial.println("RGB"); break;
+            case OperationMode::LTT: Serial.println("LTT"); break;
+            case OperationMode::POWERCON: Serial.println("POWERCON"); break;
+            case OperationMode::MQTT: Serial.println("MQTT"); break;
+            case OperationMode::WIFI: Serial.println("WIFI"); break;
+            case OperationMode::OFF: Serial.println("OFF"); break;
+        }
     }
 
     void update() {

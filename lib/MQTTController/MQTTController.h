@@ -41,6 +41,9 @@ private:
     unsigned long lastHeartbeat = 0;
     const unsigned long RECONNECT_INTERVAL = 5000;
     const unsigned long HEARTBEAT_INTERVAL = 30000;
+
+    int connectionAttempts = 0;
+    bool initialConnectionFailed = false;
     
     void setupTopics() {
         String base = "homeassistant/light/" + String(device_id);
@@ -244,11 +247,14 @@ public:
     
     void begin() {
         Serial.println("Starting MQTT mode...");
-        
+
+        connectionAttempts = 0;
+        initialConnectionFailed = false;
+
         // Connect to WiFi
         WiFi.mode(WIFI_STA);
         WiFi.begin(wifi_ssid, wifi_password);
-        
+
         Serial.printf("Connecting to WiFi network: %s\n", wifi_ssid);
         int attempts = 0;
         while (WiFi.status() != WL_CONNECTED && attempts < 30) {
@@ -256,21 +262,22 @@ public:
             Serial.print(".");
             attempts++;
         }
-        
+
         if (WiFi.status() != WL_CONNECTED) {
             Serial.println("\nFailed to connect to WiFi");
+            initialConnectionFailed = true;
             return;
         }
-        
+
         Serial.println();
         Serial.printf("Connected to WiFi. IP address: %s\n", WiFi.localIP().toString().c_str());
-        
+
         // Setup MQTT
         Serial.printf("Connecting to MQTT broker: %s:%d\n", mqtt_server, mqtt_port);
         mqttClient.setServer(mqtt_server, mqtt_port);
         mqttClient.setCallback(mqttCallback);
         mqttClient.setBufferSize(1024); // Increase buffer size for larger payloads
-        
+
         // Debug topic information
         Serial.println("=== MQTT Topics ===");
         Serial.printf("Command: %s\n", command_topic.c_str());
@@ -278,9 +285,19 @@ public:
         Serial.printf("Availability: %s\n", availability_topic.c_str());
         Serial.printf("Config: %s\n", config_topic.c_str());
         Serial.println("==================");
-        
-        // Initial connection attempt
-        reconnect();
+
+        // Initial connection attempts (2 attempts max)
+        for (int i = 0; i < 2 && !mqttClient.connected(); i++) {
+            reconnect();
+            if (!mqttClient.connected() && i < 1) {
+                delay(2000);
+            }
+        }
+
+        if (!mqttClient.connected()) {
+            Serial.println("Failed to connect to MQTT after 2 attempts");
+            initialConnectionFailed = true;
+        }
     }
     
     void reconnect() {
@@ -386,6 +403,10 @@ public:
     
     bool isConnected() {
         return WiFi.status() == WL_CONNECTED && mqttClient.connected();
+    }
+
+    bool hasInitialConnectionFailed() {
+        return initialConnectionFailed;
     }
 };
 
