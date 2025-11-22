@@ -76,8 +76,8 @@ private:
         JsonArray identifiers = device["identifiers"];
         identifiers.add(device_id);
         device["name"] = device_name;
-        device["model"] = "ESP32-C3 RGB Controller";
-        device["manufacturer"] = "Custom Electronics";
+        device["model"] = "Color Shadow LED Lamp";
+        device["manufacturer"] = "RCTESTFLIGHT";
         device["sw_version"] = "1.0.0";
         device["hw_version"] = "1.0";
         device["suggested_area"] = "Living Room"; // Optional: suggest an area
