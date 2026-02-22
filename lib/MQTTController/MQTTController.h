@@ -31,6 +31,9 @@ private:
     String availability_topic;
     String config_topic;
     
+    // Power limit: 80% of full PWM (2047) to prevent overheating
+    static const int MAX_PWM = 1638;
+
     // State tracking
     int current_red = 255;   // Start with white color
     int current_green = 255;
@@ -108,20 +111,20 @@ private:
         if (is_on) {
             // Calculate brightness as the maximum of the RGB values
             int max_rgb = max(max(current_red, current_green), current_blue);
-            doc["brightness"] = map(max_rgb, 0, 2047, 0, 255);
+            doc["brightness"] = map(max_rgb, 0, MAX_PWM, 0, 255);
             
             // Always include color information in RGB format
             JsonObject color = doc.createNestedObject("color");
-            color["r"] = map(current_red, 0, 2047, 0, 255);
-            color["g"] = map(current_green, 0, 2047, 0, 255);
-            color["b"] = map(current_blue, 0, 2047, 0, 255);
+            color["r"] = map(current_red, 0, MAX_PWM, 0, 255);
+            color["g"] = map(current_green, 0, MAX_PWM, 0, 255);
+            color["b"] = map(current_blue, 0, MAX_PWM, 0, 255);
         } else {
             // When off, still report brightness as 0 but include last color
             doc["brightness"] = 0;
             JsonObject color = doc.createNestedObject("color");
-            color["r"] = map(current_red, 0, 2047, 0, 255);
-            color["g"] = map(current_green, 0, 2047, 0, 255);
-            color["b"] = map(current_blue, 0, 2047, 0, 255);
+            color["r"] = map(current_red, 0, MAX_PWM, 0, 255);
+            color["g"] = map(current_green, 0, MAX_PWM, 0, 255);
+            color["b"] = map(current_blue, 0, MAX_PWM, 0, 255);
         }
         
         String state_payload;
@@ -165,9 +168,9 @@ private:
                 int g = constrain((int)color["g"], 0, 255);
                 int b = constrain((int)color["b"], 0, 255);
                 
-                current_red = map(r, 0, 255, 0, 2047);
-                current_green = map(g, 0, 255, 0, 2047);
-                current_blue = map(b, 0, 255, 0, 2047);
+                current_red = map(r, 0, 255, 0, MAX_PWM);
+                current_green = map(g, 0, 255, 0, MAX_PWM);
+                current_blue = map(b, 0, 255, 0, MAX_PWM);
                 
                 Serial.printf("MQTT: Color set to R=%d G=%d B=%d (PWM: %d,%d,%d)\n", 
                              r, g, b, current_red, current_green, current_blue);
@@ -186,14 +189,14 @@ private:
             if (current_red > 0 || current_green > 0 || current_blue > 0) {
                 int max_current = max(max(current_red, current_green), current_blue);
                 if (max_current > 0) {
-                    float scale = map(brightness, 0, 255, 0, 2047) / (float)max_current;
+                    float scale = map(brightness, 0, 255, 0, MAX_PWM) / (float)max_current;
                     current_red = (int)(current_red * scale);
                     current_green = (int)(current_green * scale);
                     current_blue = (int)(current_blue * scale);
                 }
             } else {
                 // No existing color, set to white at specified brightness
-                int pwm_val = map(brightness, 0, 255, 0, 2047);
+                int pwm_val = map(brightness, 0, 255, 0, MAX_PWM);
                 current_red = current_green = current_blue = pwm_val;
             }
             
