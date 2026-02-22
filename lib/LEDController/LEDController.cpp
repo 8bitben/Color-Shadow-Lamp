@@ -75,7 +75,7 @@ void LEDController::setRGBModePowerLimit() {
 
 void LEDController::setMQTTModePowerLimit() {
     currentPowerLimit = MQTT_MODE_POWER_LIMIT;
-    Serial.printf("Power limit set to MQTT mode: %f (100%%)\n", currentPowerLimit);
+    Serial.printf("Power limit set to MQTT mode: %f (80%%)\n", currentPowerLimit);
 }
 
 void LEDController::setPWMForced(int red, int green, int blue) {
