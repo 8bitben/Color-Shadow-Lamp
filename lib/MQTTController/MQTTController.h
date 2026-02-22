@@ -58,7 +58,7 @@ private:
         
         doc["name"] = device_name;
         doc["unique_id"] = device_id;
-        doc["object_id"] = device_id; // Add object_id for HA
+        doc["default_entity_id"] = "light." + String(device_id);
         doc["state_topic"] = state_topic;
         doc["command_topic"] = command_topic;
         doc["availability_topic"] = availability_topic;
@@ -112,14 +112,14 @@ private:
             doc["brightness"] = map(max_rgb, 0, 2047, 0, 255);
             
             // Always include color information in RGB format
-            JsonObject color = doc["color"];
+            JsonObject color = doc.createNestedObject("color");
             color["r"] = map(current_red, 0, 2047, 0, 255);
             color["g"] = map(current_green, 0, 2047, 0, 255);
             color["b"] = map(current_blue, 0, 2047, 0, 255);
         } else {
             // When off, still report brightness as 0 but include last color
             doc["brightness"] = 0;
-            JsonObject color = doc["color"];
+            JsonObject color = doc.createNestedObject("color");
             color["r"] = map(current_red, 0, 2047, 0, 255);
             color["g"] = map(current_green, 0, 2047, 0, 255);
             color["b"] = map(current_blue, 0, 2047, 0, 255);
@@ -160,7 +160,7 @@ private:
         
         // Handle RGB color - this takes priority over brightness
         if (doc.containsKey("color")) {
-            JsonObject color = doc["color"];
+            JsonObject color = doc["color"].as<JsonObject>();
             if (color.containsKey("r") && color.containsKey("g") && color.containsKey("b")) {
                 int r = constrain((int)color["r"], 0, 255);
                 int g = constrain((int)color["g"], 0, 255);
