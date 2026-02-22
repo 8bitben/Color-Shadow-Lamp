@@ -29,7 +29,7 @@ private:
     static constexpr float LOCKED_POWER_LIMIT = 0.3f;   // 30% power
     static constexpr float UNLOCKED_POWER_LIMIT = 0.6f; // 60% power
     static constexpr float RGB_MODE_POWER_LIMIT = 0.3f; // 30% power for RGB mode
-    static constexpr float MQTT_MODE_POWER_LIMIT = 0.8f; // 80% power for MQTT mode (prevents overheating)
+    static constexpr float MQTT_MODE_POWER_LIMIT = 0.6f; // 60% power for MQTT mode
     float currentPowerLimit;
     Preferences preferences;
     
