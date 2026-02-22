@@ -5,7 +5,7 @@ This fork of the Color Shadow Lamp firmware contains only two modes:
 - MQTT, for use with Home Assistant
 - RGB, manual control via the device knobs
 
-In MQTT mode, the power limit is set to 80%. In RGB mode, the power limit is set to 30%.
+In MQTT mode, the power limit is set to 80%. In RGB mode, the power limit is set to 30%. Use caution if you increase these, the LEDs can become very hot and may shut down or pose a fire risk if they reach very high temperatures. 
 
 
 ## Setup Instructions
