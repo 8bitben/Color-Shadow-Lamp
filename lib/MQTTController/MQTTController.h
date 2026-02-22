@@ -66,7 +66,6 @@ private:
         doc["brightness"] = true;
         doc["supported_color_modes"] = JsonArray(); // New HA format
         doc["supported_color_modes"].add("rgb");
-        doc["color_mode"] = true;
         doc["optimistic"] = false;
         doc["retain"] = true;
         doc["brightness_scale"] = 255;
